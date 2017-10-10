@@ -1,0 +1,11 @@
+# auto-detect text files and enforce linux EOLs
+* text=auto eol=lf
+
+# recognize special files a binary files preventing line to line diffs
+*.eot binary
+*.jpeg binary
+*.jpg binary
+*.png binary
+*.ttf binary
+*.woff binary
+*.woff2 binary
