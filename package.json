@@ -1,0 +1,24 @@
+{
+  "name": "indesy-robot",
+  "version": "1.0.0",
+  "description": "The robot for an indoor delivery system.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nicklasfrahm/indesy-robot.git"
+  },
+  "keywords": ["robot", "application", "indoor", "delivery", "system"],
+  "author": "nicklasfrahm",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nicklasfrahm/indesy-robot/issues"
+  },
+  "homepage": "https://github.com/nicklasfrahm/indesy-robot#readme",
+  "dependencies": {
+    "dotenv": "4.0.0",
+    "socket.io-client": "2.0.3"
+  }
+}
