@@ -2,7 +2,7 @@
 [![David](https://img.shields.io/david/nicklasfrahm/indesy-robot.svg?style=flat-square)](https://david-dm.org/)
 
 ## Description
-The robot for an indoor delivery system. The robot will be used to deliver object and is the heart of the system.
+The robot for an indoor delivery system. The robot will be used to deliver objects and is the heart of the system.
 
 ## Installation
 Create a `.env`-file and put in the following:
