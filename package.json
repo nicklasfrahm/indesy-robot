@@ -4,7 +4,7 @@
   "description": "The robot for an indoor delivery system.",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "nodemon index.js"
   },
   "repository": {
     "type": "git",
@@ -27,5 +27,8 @@
     "dotenv": "4.0.0",
     "socket.io-client": "2.0.3",
     "winston": "2.4.0"
+  },
+  "devDependencies": {
+    "nodemon": "1.12.1"
   }
 }
