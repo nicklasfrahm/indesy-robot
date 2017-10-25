@@ -2,6 +2,7 @@
   "apps": [
     {
       "name": "indesy-robot",
+      "cwd": "/opt/indesy-robot",
       "script": "./index.js",
       "instances": 1,
       "exec_mode": "fork"
