@@ -13,8 +13,16 @@ function runCmd(cmd) {
 }
 
 exports.gitPull = runCmd('git pull')
+exports.rmNodeModules = runCmd('rm -r node_modules')
+exports.npmInstall = runCmd('npm install')
 exports.pm2ReloadAll = runCmd('pm2 reload all')
 
 exports.runUpdate = cb => {
-  exports.pm2ReloadAll()
+  exports.gitPull(() => {
+    exports.rmNodeModules(() => {
+      exports.npmInstall(() => {
+        exports.pm2ReloadAll(cb)
+      })
+    })
+  })
 }
