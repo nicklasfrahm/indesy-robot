@@ -3,13 +3,18 @@ const winston = require('winston')
 
 winston.cli()
 
-function reportError(cb) {
-  return (err, stdout, stderr) => {
-    if (err) winston.error(`${err.message}\n${stdout}\n${stderr}`)
-    if (cb && typeof cb === 'function') return cb()
+function runCmd(cmd) {
+  return cb => {
+    exec(cmd, (err, stdout, stderr) => {
+      if (err) winston.error(`${err.message}\n${stdout}\n${stderr}`)
+      if (cb && typeof cb === 'function') return cb()
+    })
   }
 }
 
-exports.pullRepo = cb => {
-  exec('git pull', reportError(cb))
+exports.gitPull = runCmd('git pull')
+exports.pm2ReloadAll = runCmd('pm2 reload all')
+
+exports.runUpdate = cb => {
+  exports.pm2ReloadAll()
 }

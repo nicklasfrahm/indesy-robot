@@ -1,7 +1,7 @@
 const socketio = require('socket.io-client')
 const winston = require('winston')
 const dotenv = require('dotenv')
-const { pullRepo } = require('./source/commands')
+const { runUpdate } = require('./source/commands')
 
 dotenv.config()
 winston.cli()
@@ -26,5 +26,5 @@ socket.on('testTimer', data => {
 
 socket.on('updateAvailable', () => {
   winston.info('[SIO] Performing update.')
-  pullRepo()
+  runUpdate()
 })
