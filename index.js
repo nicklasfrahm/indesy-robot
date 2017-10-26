@@ -1,4 +1,4 @@
-const io = require('socket.io-client')
+const socketio = require('socket.io-client')
 const winston = require('winston')
 const dotenv = require('dotenv')
 
@@ -6,10 +6,11 @@ dotenv.config()
 winston.cli()
 
 const apiUrl = process.env.API_URL || 'http://localhost:8000'
-const socket = io(apiUrl, { path: '/sio' })
+const socket = socketio(apiUrl, { path: '/sio' })
 
 socket.on('connect', () => {
   winston.info(`[SIO] Connected to ${apiUrl}`)
+  socket.emit('join', { room: 'robots' })
 })
 
 socket.on('disconnect', () => {
@@ -20,4 +21,8 @@ socket.on('testTimer', data => {
   const time = new Date(data.timestamp).toLocaleTimeString()
   const offset = Date.now() - data.timestamp
   winston.info(`[SIO] Server time is ${time} (${offset}ms offset)`)
+})
+
+socket.on('update', () => {
+  winston.info('[SIO] Performing update.')
 })
