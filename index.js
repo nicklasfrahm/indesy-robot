@@ -24,7 +24,7 @@ socket.on('testTimer', data => {
   winston.info(`[SIO] Server time is ${time} (${offset}ms offset)`)
 })
 
-socket.on('update', () => {
+socket.on('updateAvailable', () => {
   winston.info('[SIO] Performing update.')
   pullRepo()
 })
