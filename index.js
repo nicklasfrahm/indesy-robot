@@ -25,6 +25,5 @@ socket.on('testTimer', data => {
 })
 
 socket.on('updateAvailable', () => {
-  winston.info('[SIO] Performing update.')
   runUpdate()
 })
