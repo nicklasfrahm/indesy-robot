@@ -77,8 +77,8 @@ if (platform() === 'linux') {
 
   // log results to console
   setInterval(() => {
-    distances.forEach(distance => {
-      winston.info(`${distance}`)
-    })
+    let distanceString = ''
+    distances.forEach(distance => (distanceString = `${distanceString} `))
+    winston.info(`[USS] ${distanceString}`)
   }, 1000)
 }
