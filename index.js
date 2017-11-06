@@ -22,7 +22,7 @@ socket.on('disconnect', () => {
 socket.on('testTimer', data => {
   const time = new Date(data.timestamp).toLocaleTimeString()
   const offset = Date.now() - data.timestamp
-  winston.info(`[SIO] Server time is ${time} (${offset}ms offset)`)
+  // winston.info(`[SIO] Server time is ${time} (${offset}ms offset)`)
 })
 
 socket.on('updateAvailable', () => {
@@ -77,8 +77,8 @@ if (platform() === 'linux') {
 
   // log results to console
   setInterval(() => {
-    let distanceString = ''
-    distances.forEach(distance => (distanceString = `${distanceString} `))
-    winston.info(`[USS] ${distanceString}`)
+    let string = ''
+    distances.forEach(distance => (string = `${string}${distance} `))
+    winston.info(`[USS] ${string}`)
   }, 1000)
 }
