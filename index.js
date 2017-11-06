@@ -73,7 +73,7 @@ if (platform() === 'linux') {
     ++counter
     if (counter > triggers.length - 1) counter = 0
     triggers[counter].trigger(10, 1) // set trigger high for 10 microseconds
-  }, 250)
+  }, 100)
 
   // log results to console
   setInterval(() => {
