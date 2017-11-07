@@ -33,14 +33,14 @@ socket.on('updateAvailable', () => {
 if (platform() === 'linux') {
   const Gpio = require('pigpio').Gpio
   const MICROSECDONDS_PER_CM = 1e6 / 34321
-  const echo = new Gpio(23, { mode: Gpio.INPUT, alert: true })
+  const echo = new Gpio(4, { mode: Gpio.INPUT, alert: true })
   const triggers = [
-    new Gpio(4, { mode: Gpio.OUTPUT }),
     new Gpio(14, { mode: Gpio.OUTPUT }),
     new Gpio(15, { mode: Gpio.OUTPUT }),
     new Gpio(17, { mode: Gpio.OUTPUT }),
     new Gpio(27, { mode: Gpio.OUTPUT }),
-    new Gpio(22, { mode: Gpio.OUTPUT })
+    new Gpio(22, { mode: Gpio.OUTPUT }),
+    new Gpio(23, { mode: Gpio.OUTPUT })
   ]
 
   let distances = triggers.map(e => 0)
@@ -61,7 +61,7 @@ if (platform() === 'linux') {
       } else {
         endTick = tick
         diff = (endTick >> 0) - (startTick >> 0) // unsigned 32 bit arithmetic
-        distances[counter] = diff / 2 / MICROSECDONDS_PER_CM
+        distances[counter] = (diff / 2 / MICROSECDONDS_PER_CM).toFixed(2)
       }
     })
   }
