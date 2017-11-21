@@ -10,13 +10,7 @@
     "type": "git",
     "url": "git+https://github.com/nicklasfrahm/indesy-robot.git"
   },
-  "keywords": [
-    "robot",
-    "application",
-    "indoor",
-    "delivery",
-    "system"
-  ],
+  "keywords": ["robot", "application", "indoor", "delivery", "system"],
   "author": "nicklasfrahm",
   "license": "MIT",
   "bugs": {
@@ -27,7 +21,8 @@
     "dotenv": "4.0.0",
     "pigpio": "0.6.3",
     "socket.io-client": "2.0.4",
-    "winston": "2.4.0"
+    "winston": "2.4.0",
+    "i2c-bus": "1.2.4"
   },
   "devDependencies": {
     "nodemon": "1.12.1"
