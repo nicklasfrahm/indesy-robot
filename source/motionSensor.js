@@ -10,10 +10,10 @@ const timer = setInterval(readTemperature, 1000)
 
 function readTemperature() {
   let temp = 0
-  i2cBus.readWord(DS1621_ADDR, OUT_TEMP_H, (err, tempHigh) => {
+  i2cBus.readWord(LSM6DS3_ADDRESS, OUT_TEMP_H, (err, tempHigh) => {
     if (err) return console.err(err)
     temp |= tempHigh << 8
-    i2cBus.readWord(DS1621_ADDR, OUT_TEMP_L, (err, tempLow) => {
+    i2cBus.readWord(LSM6DS3_ADDRESS, OUT_TEMP_L, (err, tempLow) => {
       if (err) return console.err(err)
       temp |= tempLow << 0
       process.stdout.write(`Temperature: ${temp}\n`)
