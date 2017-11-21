@@ -16,7 +16,7 @@ function readTemperature() {
     i2cBus.readWord(DS1621_ADDR, OUT_TEMP_L, (err, tempLow) => {
       if (err) return console.err(err)
       temp |= tempLow << 0
-      process.stdout.write(`Temperature: ${temp}`)
+      process.stdout.write(`Temperature: ${temp}\n`)
     })
   })
 }
