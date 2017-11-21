@@ -7,7 +7,7 @@ const {
 } = require('./LSM6DS3')
 
 function handleError(err) {
-  process.stdout.write(`[GXL] ${err.message}`)
+  process.stdout.write(`[GXL] ${err.message}\n`)
 }
 
 function readTemperature() {
