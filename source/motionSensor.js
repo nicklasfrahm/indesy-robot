@@ -6,17 +6,21 @@ const {
   OUT_TEMP_H
 } = require('./LSM6DS3')
 
-const timer = setInterval(readTemperature, 1000)
+function handleError(err) {
+  process.stdout.write(`[GXL] ${err.message}`)
+}
 
 function readTemperature() {
   let temp = 0
   i2cBus.readWord(LSM6DS3_ADDRESS, OUT_TEMP_H, (err, tempHigh) => {
-    if (err) return console.err(err)
+    if (err) return handleError(err)
     temp |= tempHigh << 8
     i2cBus.readWord(LSM6DS3_ADDRESS, OUT_TEMP_L, (err, tempLow) => {
-      if (err) return console.err(err)
+      if (err) return handleError(err)
       temp |= tempLow << 0
-      process.stdout.write(`Temperature: ${temp}\n`)
+      process.stdout.write(`[GXL] Temperature: ${temp}\n`)
     })
   })
 }
+
+const timer = setInterval(readTemperature, 1000)
