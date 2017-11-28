@@ -7,7 +7,7 @@ const {
 } = require('./LSM6DS3')
 
 function handleError(err) {
-  process.stdout.write(`[GXL] ${err.message}\n`)
+  winston.error(`[GXL] ${err.message}`)
 }
 
 function readTemperature() {
@@ -15,10 +15,12 @@ function readTemperature() {
   bus.readByte(LSM6DS3_ADDRESS, OUT_TEMP_H, (err, tempHigh) => {
     if (err) return handleError(err)
     temp |= tempHigh << 8
+    winston.info(`[GXL] ${temp} ${tempHigh}`)
     bus.readByte(LSM6DS3_ADDRESS, OUT_TEMP_L, (err, tempLow) => {
       if (err) return handleError(err)
       temp |= tempLow << 0
-      process.stdout.write(`[GXL] Temperature: ${temp}\n`)
+      winston.info(`[GXL] ${temp} ${tempLow}`)
+      winston.info(`[GXL] Temperature: ${temp}`)
     })
   })
 }
