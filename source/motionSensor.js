@@ -1,4 +1,5 @@
 const bus = require('i2c-bus').openSync(1)
+const winston = require('winson').cli()
 const {
   LSM6DS3_ADDRESS,
   STATUS_REG,
