@@ -1,8 +1,9 @@
-const bus = require('i2c-bus').openSync(1)
+const i2c = require('i2c-bus')
 const winston = require('winson').cli()
 
 const sensor = {}
 
+sensor.bus = i2c.openSync(1)
 sensor.STATUS_REG = 0x1e
 sensor.OUT_TEMP_L = 0x20
 sensor.OUT_TEMP_H = 0x21
@@ -30,17 +31,25 @@ function log(msg) {
 
 function readTemperature() {
   let temp = 0
-  bus.readByte(sensor.LSM6DS3_ADDRESS, sensor.OUT_TEMP_H, (err, tempHigh) => {
-    if (err) return handleError(err)
-    temp |= tempHigh << 8
-    log(`[GXL] ${temp} ${tempHigh}`)
-    bus.readByte(sensor.LSM6DS3_ADDRESS, sensor.OUT_TEMP_L, (err, tempLow) => {
+  sensor.bus.readByte(
+    sensor.LSM6DS3_ADDRESS,
+    sensor.OUT_TEMP_H,
+    (err, tempHigh) => {
       if (err) return handleError(err)
-      temp |= tempLow << 0
-      log(`${temp} ${tempLow}`)
-      log(`Temperature: ${temp}`)
-    })
-  })
+      temp |= tempHigh << 8
+      log(`${temp} ${tempHigh}`)
+      sensor.bus.readByte(
+        sensor.LSM6DS3_ADDRESS,
+        sensor.OUT_TEMP_L,
+        (err, tempLow) => {
+          if (err) return handleError(err)
+          temp |= tempLow << 0
+          log(`${temp} ${tempLow}`)
+          log(`Temperature: ${temp}`)
+        }
+      )
+    }
+  )
 }
 
 const timer = setInterval(readTemperature, 1000)
