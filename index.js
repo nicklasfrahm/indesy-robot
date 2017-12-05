@@ -1,8 +1,12 @@
 const socketio = require('socket.io-client')
 const winston = require('winston')
 const dotenv = require('dotenv')
-const { runUpdate } = require('./source/commands')
+const { Gpio } = require('pigpio')
 const { platform } = require('os')
+const { runUpdate } = require('./source/commands')
+
+const STOP = 0
+const MAXDUTY = 255
 
 dotenv.config()
 winston.cli()
@@ -19,10 +23,42 @@ socket.on('disconnect', () => {
   winston.info(`[SIO] Disconnected to ${apiUrl}`)
 })
 
-socket.on('testTimer', data => {
-  const time = new Date(data.timestamp).toLocaleTimeString()
-  const offset = Date.now() - data.timestamp
-  // winston.info(`[SIO] Server time is ${time} (${offset}ms offset)`)
+const motors = {
+  left: {
+    gpios: [
+      new Gpio(14, { mode: Gpio.OUTPUT }),
+      new Gpio(15, { mode: Gpio.OUTPUT })
+    ],
+    status: STOP
+  },
+  right: {
+    gpios: [
+      new Gpio(23, { mode: Gpio.OUTPUT }),
+      new Gpio(24, { mode: Gpio.OUTPUT })
+    ],
+    status: STOP
+  }
+}
+socket.on('controlMovement', data => {
+  if (data && data.inputs && data.duty !== undefined) {
+    duty = Math.abs(data.duty * MAXDUTY / 100)
+    let forward = data.duty > 0
+
+    if (~data.buttons.indexOf('L')) {
+      motors.right.gpios[forward ? 1 : 0].pwmWrite(0)
+      motors.right.gpios[forward ? 0 : 1].pwmWrite(duty)
+    } else {
+      motors.right.gpios[0].pwmWrite(MAXDUTY)
+      motors.right.gpios[1].pwmWrite(MAXDUTY)
+    }
+    if (~data.buttons.indexOf('R')) {
+      motors.left.gpios[forward ? 1 : 0].pwmWrite(0)
+      motors.left.gpios[forward ? 0 : 1].pwmWrite(duty)
+    } else {
+      motors.left.gpios[0].pwmWrite(MAXDUTY)
+      motors.left.gpios[1].pwmWrite(MAXDUTY)
+    }
+  }
 })
 
 socket.on('updateAvailable', () => {
