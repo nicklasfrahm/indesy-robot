@@ -29,8 +29,8 @@ if (platform() === 'linux') {
   const MICROSECDONDS_PER_CM = 1e6 / 34321
   const echo = new Gpio(4, { mode: Gpio.INPUT, alert: true })
   const triggers = [
-    new Gpio(14, { mode: Gpio.OUTPUT }),
-    new Gpio(15, { mode: Gpio.OUTPUT }),
+    new Gpio(25, { mode: Gpio.OUTPUT }),
+    new Gpio(8, { mode: Gpio.OUTPUT }),
     new Gpio(17, { mode: Gpio.OUTPUT }),
     new Gpio(27, { mode: Gpio.OUTPUT }),
     new Gpio(22, { mode: Gpio.OUTPUT }),
@@ -96,7 +96,7 @@ if (platform() === 'linux') {
   }
   //control motors: 00 STOP, 01 CW, 10 CCW, 11 BRAKE
   socket.on('controlMovement', data => {
-    if (data && data.inputs && data.duty !== undefined) {
+    if (data && data.buttons && data.duty !== undefined) {
       duty = Math.abs(data.duty * MAXDUTY / 100)
       let forward = data.duty > 0
 
