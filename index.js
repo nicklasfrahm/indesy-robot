@@ -34,7 +34,7 @@ if (platform() === 'linux') {
     new Gpio(17, { mode: Gpio.OUTPUT }),
     new Gpio(27, { mode: Gpio.OUTPUT }),
     new Gpio(22, { mode: Gpio.OUTPUT }),
-    new Gpio(23, { mode: Gpio.OUTPUT })
+    new Gpio(12, { mode: Gpio.OUTPUT })
   ]
   const STOP = 0
   const MAXDUTY = 255
