@@ -98,7 +98,7 @@ if (platform() === 'linux') {
   socket.on('controlMovement', data => {
     console.log(data)
     if (data && data.buttons && data.duty !== undefined) {
-      duty = Math.abs(data.duty * MAXDUTY / 100)
+      duty = Math.abs(Math.floor(data.duty * MAXDUTY / 100))
       let forward = data.duty > 0
 
       if (~data.buttons.indexOf('L')) {
