@@ -1,12 +1,8 @@
 const socketio = require('socket.io-client')
 const winston = require('winston')
 const dotenv = require('dotenv')
-const { Gpio } = require('pigpio')
 const { platform } = require('os')
 const { runUpdate } = require('./source/commands')
-
-const STOP = 0
-const MAXDUTY = 255
 
 dotenv.config()
 winston.cli()
@@ -21,44 +17,6 @@ socket.on('connect', () => {
 
 socket.on('disconnect', () => {
   winston.info(`[SIO] Disconnected to ${apiUrl}`)
-})
-
-const motors = {
-  left: {
-    gpios: [
-      new Gpio(14, { mode: Gpio.OUTPUT }),
-      new Gpio(15, { mode: Gpio.OUTPUT })
-    ],
-    status: STOP
-  },
-  right: {
-    gpios: [
-      new Gpio(23, { mode: Gpio.OUTPUT }),
-      new Gpio(24, { mode: Gpio.OUTPUT })
-    ],
-    status: STOP
-  }
-}
-socket.on('controlMovement', data => {
-  if (data && data.inputs && data.duty !== undefined) {
-    duty = Math.abs(data.duty * MAXDUTY / 100)
-    let forward = data.duty > 0
-
-    if (~data.buttons.indexOf('L')) {
-      motors.right.gpios[forward ? 1 : 0].pwmWrite(0)
-      motors.right.gpios[forward ? 0 : 1].pwmWrite(duty)
-    } else {
-      motors.right.gpios[0].pwmWrite(MAXDUTY)
-      motors.right.gpios[1].pwmWrite(MAXDUTY)
-    }
-    if (~data.buttons.indexOf('R')) {
-      motors.left.gpios[forward ? 1 : 0].pwmWrite(0)
-      motors.left.gpios[forward ? 0 : 1].pwmWrite(duty)
-    } else {
-      motors.left.gpios[0].pwmWrite(MAXDUTY)
-      motors.left.gpios[1].pwmWrite(MAXDUTY)
-    }
-  }
 })
 
 socket.on('updateAvailable', () => {
@@ -78,6 +36,8 @@ if (platform() === 'linux') {
     new Gpio(22, { mode: Gpio.OUTPUT }),
     new Gpio(23, { mode: Gpio.OUTPUT })
   ]
+  const STOP = 0
+  const MAXDUTY = 255
 
   let distances = triggers.map(e => 0)
   let counter = 0
@@ -117,4 +77,43 @@ if (platform() === 'linux') {
     distances.forEach(distance => (string = `${string}${distance} `))
     winston.info(`[USS] ${string}`)
   }, 1000)
+  //define motor GPIO pins
+  const motors = {
+    left: {
+      gpios: [
+        new Gpio(14, { mode: Gpio.OUTPUT }),
+        new Gpio(15, { mode: Gpio.OUTPUT })
+      ],
+      status: STOP
+    },
+    right: {
+      gpios: [
+        new Gpio(23, { mode: Gpio.OUTPUT }),
+        new Gpio(24, { mode: Gpio.OUTPUT })
+      ],
+      status: STOP
+    }
+  }
+  //control motors: 00 STOP, 01 CW, 10 CCW, 11 BRAKE
+  socket.on('controlMovement', data => {
+    if (data && data.inputs && data.duty !== undefined) {
+      duty = Math.abs(data.duty * MAXDUTY / 100)
+      let forward = data.duty > 0
+
+      if (~data.buttons.indexOf('L')) {
+        motors.right.gpios[forward ? 0 : 1].pwmWrite(0)
+        motors.right.gpios[forward ? 1 : 0].pwmWrite(duty)
+      } else {
+        motors.right.gpios[0].pwmWrite(MAXDUTY)
+        motors.right.gpios[1].pwmWrite(MAXDUTY)
+      }
+      if (~data.buttons.indexOf('R')) {
+        motors.left.gpios[forward ? 0 : 1].pwmWrite(0)
+        motors.left.gpios[forward ? 1 : 0].pwmWrite(duty)
+      } else {
+        motors.left.gpios[0].pwmWrite(MAXDUTY)
+        motors.left.gpios[1].pwmWrite(MAXDUTY)
+      }
+    }
+  })
 }
