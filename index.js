@@ -96,6 +96,7 @@ if (platform() === 'linux') {
   }
   //control motors: 00 STOP, 01 CW, 10 CCW, 11 BRAKE
   socket.on('controlMovement', data => {
+    console.log(data)
     if (data && data.buttons && data.duty !== undefined) {
       duty = Math.abs(data.duty * MAXDUTY / 100)
       let forward = data.duty > 0
