@@ -1,41 +1,65 @@
-// TO BE REFACTORED
-// SHOULD USE IPC COMMUNICATION
+const os = require('os').platform()
 
-//define motor GPIO pins
-const motors = {
-  left: {
-    gpios: [
+let Gpio = null
+let logger = null
+
+if (os === 'linux') {
+  Gpio = require('pigpio').Gpio
+
+  const motors = {
+    left: [
       new Gpio(14, { mode: Gpio.OUTPUT }),
       new Gpio(15, { mode: Gpio.OUTPUT })
     ],
-    status: STOP
-  },
-  right: {
-    gpios: [
+    right: [
       new Gpio(23, { mode: Gpio.OUTPUT }),
       new Gpio(24, { mode: Gpio.OUTPUT })
-    ],
-    status: STOP
+    ]
   }
+} else {
+  logger = require('./util').Logger()
 }
-//control motors: 00 STOP, 01 CW, 10 CCW, 11 BRAKEsocket.on('controlMovement', data => {
-console.log(data)
-if (data && data.buttons && data.duty !== undefined) {
-  duty = Math.abs(Math.floor(data.duty * MAXDUTY / 100))
-  let forward = data.duty > 0
 
-  if (~data.buttons.indexOf('L')) {
-    motors.right.gpios[forward ? 0 : 1].pwmWrite(0)
-    motors.right.gpios[forward ? 1 : 0].pwmWrite(duty)
-  } else {
-    motors.right.gpios[0].pwmWrite(MAXDUTY)
-    motors.right.gpios[1].pwmWrite(MAXDUTY)
+process.on('message', message => {
+  if (message && message.body) {
+    const { body } = message
+
+    if (message.cmd === 'pwmWrite') {
+      for (let motor of Object.keys(body)) {
+        if (body[motor]) {
+          for (let gpio of Object.keys(body[motor])) {
+            if (os === 'linux') {
+              motors[motor][gpio].pwmWrite(body[motor][gpio])
+            } else {
+              logger.info(`PWM: ${motor} ${gpio} ${body[motor][gpio]}`)
+            }
+          }
+        }
+      }
+    }
   }
-  if (~data.buttons.indexOf('R')) {
-    motors.left.gpios[forward ? 0 : 1].pwmWrite(0)
-    motors.left.gpios[forward ? 1 : 0].pwmWrite(duty)
-  } else {
-    motors.left.gpios[0].pwmWrite(MAXDUTY)
-    motors.left.gpios[1].pwmWrite(MAXDUTY)
-  }
+})
+
+if (os === 'win32') {
+  const rl = require('readline')
+    .createInterface({
+      input: process.stdin,
+      output: process.stdout
+    })
+    .on('SIGINT', () => {
+      process.emit('SIGINT')
+    })
 }
+
+process.on('SIGINT', () => {
+  if (os === 'linux') {
+    for (let motor of Object.keys(motors)) {
+      for (let gpio of Object.keys(motors[motor])) {
+        motors[motor][gpio].pwmWrite(0)
+      }
+    }
+  } else {
+    logger.info(`Pulling down PWM ...`)
+  }
+  process.exit()
+})

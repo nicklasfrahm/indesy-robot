@@ -1,3 +1,5 @@
+const winston = require('winston').cli()
+
 exports.roundTo = function(n, digits) {
   if (digits === undefined) {
     digits = 0
@@ -14,4 +16,10 @@ exports.roundTo = function(n, digits) {
     n = (n * -1).toFixed(2)
   }
   return n
+}
+
+exports.Logger = function() {
+  const worker = process.env.workerName
+  this.info = message => winston.info(`[${worker}] ${message}`)
+  return this
 }
