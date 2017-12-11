@@ -19,11 +19,8 @@ cluster.on('exit', cluster.respawn)
 // websocket communication
 cluster.spawn('./source/websocket', 'websocket')
 
-// ultrasonic sensor
-cluster.spawn('./source/ultrasonic', 'ultrasonic')
-
-// motor
-cluster.spawn('./source/motor', 'motor')
+// gpio communication
+cluster.spawn('./source/gpio', 'gpio')
 
 // proxy worker messages
 cluster.on('message', (sender, message) => {
