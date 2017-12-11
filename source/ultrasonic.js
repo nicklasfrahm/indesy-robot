@@ -26,7 +26,7 @@ function checkProximity() {
 }
 
 if (os === 'linux') {
-  const Gpio = require('pigpio')
+  const Gpio = require('pigpio').Gpio
 
   echo = new Gpio(4, { mode: Gpio.INPUT, alert: true })
   triggers = [
