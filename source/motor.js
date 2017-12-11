@@ -2,12 +2,13 @@ const os = require('os').platform()
 
 let Gpio = null
 let logger = null
+let motors = null
 let config = { enabled: true }
 
 if (os === 'linux') {
   Gpio = require('pigpio').Gpio
 
-  const motors = {
+  motors = {
     left: [
       new Gpio(14, { mode: Gpio.OUTPUT }),
       new Gpio(15, { mode: Gpio.OUTPUT })
