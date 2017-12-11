@@ -140,14 +140,13 @@ if (os === 'win32') {
 }
 
 process.on('SIGINT', () => {
+  logger.info(`Pulling down PWM ...`)
   if (os === 'linux') {
     for (let motor of Object.keys(motors)) {
       for (let gpio of Object.keys(motors[motor])) {
         motors[motor][gpio].pwmWrite(0)
       }
     }
-  } else {
-    logger.info(`Pulling down PWM ...`)
   }
   process.exit()
 })
