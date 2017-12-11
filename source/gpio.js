@@ -31,6 +31,7 @@ if (os === 'linux') {
   const Gpio = require('pigpio').Gpio
 
   echo = new Gpio(4, { mode: Gpio.INPUT, alert: true })
+
   triggers = [
     new Gpio(25, { mode: Gpio.OUTPUT }),
     new Gpio(8, { mode: Gpio.OUTPUT }),
@@ -39,6 +40,7 @@ if (os === 'linux') {
     new Gpio(22, { mode: Gpio.OUTPUT }),
     new Gpio(12, { mode: Gpio.OUTPUT })
   ]
+
   motors = {
     left: [
       new Gpio(14, { mode: Gpio.OUTPUT }),
@@ -108,7 +110,7 @@ process.on('message', message => {
   if (message && message.body) {
     const { body } = message
 
-    if (message.cmd === 'writePwm' && config.enabled) {
+    if (message.cmd === 'pwmWrite' && config.enabled) {
       for (let motor of Object.keys(body)) {
         if (body[motor]) {
           for (let gpio of Object.keys(body[motor])) {

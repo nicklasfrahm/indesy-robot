@@ -61,9 +61,9 @@ socket.on('controlMovement', data => {
   }
   process.send({
     proxy: true,
-    recipient: 'motor',
+    recipient: 'gpio',
     sender: process.env.workerName,
-    cmd: 'writePwm',
+    cmd: 'pwmWrite',
     body
   })
 })
