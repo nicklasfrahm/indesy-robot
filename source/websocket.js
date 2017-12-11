@@ -63,7 +63,7 @@ socket.on('controlMovement', data => {
     proxy: true,
     recipient: 'motor',
     sender: process.env.workerName,
-    cmd: 'pwmWrite',
+    cmd: 'writePwm',
     body
   })
 })

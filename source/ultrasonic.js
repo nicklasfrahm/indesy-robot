@@ -4,16 +4,26 @@ let Gpio = null
 
 const logger = Logger()
 const scanAmount = 50
-const scanInterval = 1000 / scanAmount
+const scanPeriodTime = 1000 / scanAmount
 const µsPerCm = 1e6 / 34321
+const minimumDistances = [15, 30, 30, 30, 30, 15]
 
 let distances = [0, 0, 0, 0, 0, 0]
 let echo = null
 let triggers = null
 let cursor = 0
 let start = 0
-let scanTimer = null
-let logTimer = null
+let scanInterval = null
+let logInterval = null
+
+function checkProximity() {
+  for (let index = 0; index < distances.length; ++index) {
+    if (distances[index] < minimumDistances[index]) {
+      return false
+    }
+  }
+  return true
+}
 
 if (os === 'linux') {
   const Gpio = require('pigpio')
@@ -48,7 +58,7 @@ if (os === 'linux') {
     }
   })
 
-  scanTimer = setInterval(() => {
+  scanInterval = setInterval(() => {
     ++cursor
     if (cursor > triggers.length - 1) {
       cursor = 0
@@ -56,11 +66,27 @@ if (os === 'linux') {
 
     // set trigger high for 10 microseconds
     triggers[cursor].trigger(10, 1)
-  }, scanInterval)
+
+    let body = {}
+
+    if (!checkProximity()) {
+      body.enabled = false
+    } else {
+      body.enabled = true
+    }
+
+    process.send({
+      proxy: true,
+      recipient: 'motor',
+      sender: process.env.workerName,
+      cmd: 'setConfig',
+      body
+    })
+  }, scanPeriodTime)
 }
 
 // log results to console
-logTimer = setInterval(() => {
+logInterval = setInterval(() => {
   const reducer = (accumulator, current) => `${accumulator}${current} `
   logger.info(`${distances.reduce(reducer, '')}`)
 }, 1000)

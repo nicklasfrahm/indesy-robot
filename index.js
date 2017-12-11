@@ -7,6 +7,7 @@ if (cluster.isMaster) {
   try {
     require(process.env.workerScript)
   } catch (err) {
-    winston.error(`[master] Missing script: ${process.env.workerName}`)
+    winston.error(`[master] Start failed: ${process.env.workerName}`)
+    winston.error(`[master] ${err.message}\n${err.stack}`)
   }
 }

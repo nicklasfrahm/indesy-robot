@@ -2,6 +2,7 @@ const os = require('os').platform()
 
 let Gpio = null
 let logger = null
+let config = { enabled: true }
 
 if (os === 'linux') {
   Gpio = require('pigpio').Gpio
@@ -24,7 +25,7 @@ process.on('message', message => {
   if (message && message.body) {
     const { body } = message
 
-    if (message.cmd === 'pwmWrite') {
+    if (message.cmd === 'writePwm' && config.enabled) {
       for (let motor of Object.keys(body)) {
         if (body[motor]) {
           for (let gpio of Object.keys(body[motor])) {
@@ -36,6 +37,9 @@ process.on('message', message => {
           }
         }
       }
+    }
+    if (message.cmd === 'setConfig') {
+      config.enabled = body.enabled || config.enabled
     }
   }
 })
