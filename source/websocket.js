@@ -14,21 +14,6 @@ socket.on('disconnect', () => {
   logger.info(`Disconnected: ${apiUrl}`)
 })
 
-let trigger = 0
-
-socket.on('testTimer', data => {
-  ++trigger
-  if (trigger > 4) {
-    process.send({
-      proxy: true,
-      recipient: 'test',
-      sender: process.env.workerName,
-      body: data
-    })
-    trigger = 0
-  }
-})
-
 socket.on('controlMovement', data => {
   const DUTY_MAX = 255
   const DUTY_MIN = 0
