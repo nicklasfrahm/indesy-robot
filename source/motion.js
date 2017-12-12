@@ -24,5 +24,5 @@ sensor.OUTZ_L_XL = 0x2c
 sensor.OUTZ_H_XL = 0x2d
 
 const timer = setInterval(() => {
-  winston.info(sensor.bus.readWord(sensor.address, sensor.temp))
+  winston.info(sensor.bus.readWordSync(sensor.address, sensor.temp))
 }, 200)
