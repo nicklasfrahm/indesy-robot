@@ -1,8 +1,8 @@
-import { config } from '../../../../../AppData/Local/Microsoft/TypeScript/2.6/node_modules/@types/dotenv'
-
 const os = require('os').platform()
 const { roundTo, Logger } = require('./util')
 
+const DUTY_MIN = 0
+const DUTY_MAX = 255
 const logger = Logger()
 const scanAmount = 50
 const obstacleWaitTime = 500
@@ -22,6 +22,14 @@ let logInterval = null
 let state = {
   obstacle: 0,
   wifi: true
+}
+
+function setDuty(duty) {
+  for (let motor of Object.keys(motors)) {
+    for (let gpio of Object.keys(motors[motor])) {
+      motors[motor][gpio].pwmWrite(duty)
+    }
+  }
 }
 
 function checkProximity() {
@@ -88,11 +96,12 @@ if (os === 'linux') {
     triggers[cursor].trigger(10, 1)
 
     if (!checkProximity()) {
-      if (!config.obstacle) {
-        config.obstacle = Date.now()
+      if (!state.obstacle) {
+        state.obstacle = Date.now()
+        setDuty(DUTY_MAX)
       }
     } else {
-      config.obstacle = 0
+      state.obstacle = 0
     }
   }, scanPeriodTime)
 }
@@ -140,11 +149,7 @@ if (os === 'win32') {
 
 process.on('SIGINT', () => {
   if (os === 'linux') {
-    for (let motor of Object.keys(motors)) {
-      for (let gpio of Object.keys(motors[motor])) {
-        motors[motor][gpio].pwmWrite(0)
-      }
-    }
+    setDuty(DUTY_MIN)
   } else {
     logger.info(`Pulling down PWM ...`)
   }
