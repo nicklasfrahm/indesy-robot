@@ -1,15 +1,17 @@
+import { config } from '../../../../../AppData/Local/Microsoft/TypeScript/2.6/node_modules/@types/dotenv'
+
 const os = require('os').platform()
 const { roundTo, Logger } = require('./util')
 
 const logger = Logger()
 const scanAmount = 50
+const obstacleWaitTime = 500
 const scanPeriodTime = 1000 / scanAmount
 const µsPerCm = 1e6 / 34321
 const minimumDistances = [15, 30, 30, 30, 30, 15]
 
 let Gpio = null
 let motors = null
-let config = { enabled: true }
 let distances = [0, 0, 0, 0, 0, 0]
 let echo = null
 let triggers = null
@@ -17,6 +19,10 @@ let cursor = 0
 let start = 0
 let scanInterval = null
 let logInterval = null
+let state = {
+  obstacle: 0,
+  wifi: true
+}
 
 function checkProximity() {
   for (let index = 0; index < distances.length; ++index) {
@@ -81,21 +87,13 @@ if (os === 'linux') {
     // set trigger high for 10 microseconds
     triggers[cursor].trigger(10, 1)
 
-    let body = {}
-
     if (!checkProximity()) {
-      body.enabled = false
+      if (!config.obstacle) {
+        config.obstacle = Date.now()
+      }
     } else {
-      body.enabled = true
+      config.obstacle = 0
     }
-
-    process.send({
-      proxy: true,
-      recipient: 'gpio',
-      sender: process.env.workerName,
-      cmd: 'setConfig',
-      body
-    })
   }, scanPeriodTime)
 }
 
@@ -109,8 +107,10 @@ logInterval = setInterval(() => {
 process.on('message', message => {
   if (message && message.body) {
     const { body } = message
+    const unobstructed =
+      !state.obstacle || Date.now() > state.obstacle + obstacleWaitTime
 
-    if (message.cmd === 'pwmWrite' && config.enabled) {
+    if (message.cmd === 'pwmWrite' && unobstructed) {
       for (let motor of Object.keys(body)) {
         if (body[motor]) {
           for (let gpio of Object.keys(body[motor])) {
@@ -122,9 +122,6 @@ process.on('message', message => {
           }
         }
       }
-    }
-    if (message.cmd === 'setConfig') {
-      config.enabled = body.enabled || config.enabled
     }
   }
 })
