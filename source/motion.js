@@ -1,5 +1,5 @@
 const i2c = require('i2c-bus')
-const winston = require('winson').cli()
+const winston = require('winston').cli()
 const os = require('os').platform()
 
 const sensor = {}
