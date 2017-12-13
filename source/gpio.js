@@ -98,7 +98,6 @@ if (os === 'linux') {
     if (!checkProximity()) {
       if (!state.obstacle) {
         state.obstacle = Date.now()
-        setDuty(DUTY_MAX)
       }
     } else {
       state.obstacle = 0
@@ -119,17 +118,21 @@ process.on('message', message => {
     const unobstructed =
       state.obstacle || Date.now() > state.obstacle + obstacleWaitTime
 
-    if (message.cmd === 'pwmWrite' && unobstructed) {
-      for (let motor of Object.keys(body)) {
-        if (body[motor]) {
-          for (let gpio of Object.keys(body[motor])) {
-            if (os === 'linux') {
-              motors[motor][gpio].pwmWrite(body[motor][gpio])
-            } else {
-              logger.info(`PWM: ${motor} ${gpio} ${body[motor][gpio]}`)
+    if (message.cmd === 'pwmWrite') {
+      if (unobstructed) {
+        for (let motor of Object.keys(body)) {
+          if (body[motor]) {
+            for (let gpio of Object.keys(body[motor])) {
+              if (os === 'linux') {
+                motors[motor][gpio].pwmWrite(body[motor][gpio])
+              } else {
+                logger.info(`PWM: ${motor} ${gpio} ${body[motor][gpio]}`)
+              }
             }
           }
         }
+      } else {
+        setDuty(DUTY_MAX)
       }
     }
   }
