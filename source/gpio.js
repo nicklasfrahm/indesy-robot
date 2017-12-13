@@ -101,7 +101,6 @@ if (os === 'linux') {
       }
       if (Date.now() <= state.obstacle + obstacleWaitTime) {
         setDuty(DUTY_MAX)
-        process.stdout.write('BRAKE\n')
       }
     } else {
       state.obstacle = 0
@@ -123,7 +122,6 @@ process.on('message', message => {
       !state.obstacle || Date.now() > state.obstacle + obstacleWaitTime
 
     if (message.cmd === 'pwmWrite' && unobstructed) {
-      process.stdout.write('DRIVE\n')
       for (let motor of Object.keys(body)) {
         if (body[motor]) {
           for (let gpio of Object.keys(body[motor])) {
