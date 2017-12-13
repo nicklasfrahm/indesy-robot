@@ -23,11 +23,11 @@ sensor.OUTY_H_XL = 0x2b
 sensor.OUTZ_L_XL = 0x2c
 sensor.OUTZ_H_XL = 0x2d
 
-function readWord(address) {
-  bus.readWord(DS1621_ADDR, address, function(err, data) {
+function readWord(register) {
+  bus.readWord(sensor.address, register, function(err, data) {
     if (err) throw err
     console.log(data)
-    readWord(address)
+    readWord(register)
   })
 }
 
