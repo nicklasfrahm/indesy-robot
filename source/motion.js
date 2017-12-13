@@ -3,6 +3,7 @@ const winston = require('winston').cli()
 const os = require('os').platform()
 
 let bus = null
+let sensor = {}
 
 sensor.address = 0x6a
 sensor.temp = 0x20
