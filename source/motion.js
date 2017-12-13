@@ -29,6 +29,7 @@ function readWord(register) {
     bus.readByte(sensor.address, register + 1, function(err, highData) {
       if (err) throw err
       const data = (lowData << 0) | (highData << 8)
+      process.stdout.write(`${data}\n`)
       readWord(register)
     })
   })
