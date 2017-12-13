@@ -13,13 +13,13 @@ function initializeSensor(cb) {
   readByte = bus.readByte.bind(null, deviceAddress)
   writeByte = bus.writeByte.bind(null, deviceAddress)
 
-  bus.writeByte(sensor.CTRL9_XL, 0x38, err => {
+  writeByte(sensor.CTRL9_XL, 0x38, err => {
     if (err) return cb(err)
-    bus.writeByte(sensor.CTRL1_XL, 0x60, err => {
+    writeByte(sensor.CTRL1_XL, 0x60, err => {
       if (err) return cb(err)
-      bus.writeByte(sensor.CTRL10_C, 0x38, err => {
+      writeByte(sensor.CTRL10_C, 0x38, err => {
         if (err) return cb(err)
-        bus.writeByte(sensor.CTRL2_G, 0x60, err => {
+        writeByte(sensor.CTRL2_G, 0x60, err => {
           if (err) return cb(err)
           cb()
         })
