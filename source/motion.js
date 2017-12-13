@@ -24,14 +24,17 @@ sensor.OUTZ_L_XL = 0x2c
 sensor.OUTZ_H_XL = 0x2d
 
 function readWord(register) {
-  bus.readWord(sensor.address, register, function(err, data) {
+  bus.readByte(sensor.address, register, function(err, lowData) {
     if (err) throw err
-    console.log(data)
-    readWord(register)
+    bus.readByte(sensor.address, register + 1, function(err, highData) {
+      if (err) throw err
+      const data = (lowData << 0) | (highData << 8)
+      readWord(register)
+    })
   })
 }
 
 bus = i2c.open(1, function(err) {
   if (err) throw err
-  readWord(sensor.OUT_TEMP_H)
+  readWord(sensor.OUT_TEMP_L)
 })
