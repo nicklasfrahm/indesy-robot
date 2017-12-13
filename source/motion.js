@@ -2,9 +2,8 @@ const i2c = require('i2c-bus')
 const winston = require('winston').cli()
 const os = require('os').platform()
 
-const sensor = {}
+let bus = null
 
-sensor.bus = i2c.openSync(1)
 sensor.address = 0x6a
 sensor.temp = 0x20
 sensor.STATUS_REG = 0x1e
@@ -23,6 +22,15 @@ sensor.OUTY_H_XL = 0x2b
 sensor.OUTZ_L_XL = 0x2c
 sensor.OUTZ_H_XL = 0x2d
 
-const timer = setInterval(() => {
-  winston.info(sensor.bus.readWordSync(sensor.address, sensor.temp))
-}, 200)
+function readWord(address) {
+  bus.readWord(DS1621_ADDR, address, function(err, data) {
+    if (err) throw err
+    console.log(data)
+    readWord(address)
+  })
+}
+
+bus = i2c.open(1, function(err) {
+  if (err) throw err
+  readWord(sensor.OUT_TEMP_H)
+})
