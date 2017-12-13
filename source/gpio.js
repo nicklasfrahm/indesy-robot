@@ -5,7 +5,7 @@ const DUTY_MIN = 0
 const DUTY_MAX = 255
 const logger = Logger()
 const scanAmount = 50
-const obstacleWaitTime = 3000
+const obstacleWaitTime = 1500
 const scanPeriodTime = 1000 / scanAmount
 const µsPerCm = 1e6 / 34321
 const minimumDistances = [15, 30, 30, 30, 30, 15]
@@ -57,12 +57,12 @@ if (os === 'linux') {
 
   motors = {
     left: [
-      new Gpio(14, { mode: Gpio.OUTPUT }),
-      new Gpio(15, { mode: Gpio.OUTPUT })
-    ],
-    right: [
       new Gpio(23, { mode: Gpio.OUTPUT }),
       new Gpio(24, { mode: Gpio.OUTPUT })
+    ],
+    right: [
+      new Gpio(14, { mode: Gpio.OUTPUT }),
+      new Gpio(15, { mode: Gpio.OUTPUT })
     ]
   }
 
