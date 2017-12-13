@@ -120,7 +120,7 @@ process.on('message', message => {
   if (message && message.body) {
     const { body } = message
     const unobstructed =
-      state.obstacle || Date.now() > state.obstacle + obstacleWaitTime
+      !state.obstacle || Date.now() > state.obstacle + obstacleWaitTime
 
     if (message.cmd === 'pwmWrite' && unobstructed) {
       process.stdout.write('DRIVE\n')
