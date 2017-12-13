@@ -44,15 +44,15 @@ function checkProximity() {
 if (os === 'linux') {
   const Gpio = require('pigpio').Gpio
 
-  echo = new Gpio(4, { mode: Gpio.INPUT, alert: true })
+  echo = new Gpio(21, { mode: Gpio.INPUT, alert: true })
 
   triggers = [
-    new Gpio(25, { mode: Gpio.OUTPUT }),
-    new Gpio(8, { mode: Gpio.OUTPUT }),
-    new Gpio(17, { mode: Gpio.OUTPUT }),
-    new Gpio(27, { mode: Gpio.OUTPUT }),
-    new Gpio(22, { mode: Gpio.OUTPUT }),
-    new Gpio(12, { mode: Gpio.OUTPUT })
+    new Gpio(11, { mode: Gpio.OUTPUT }),
+    new Gpio(5, { mode: Gpio.OUTPUT }),
+    new Gpio(6, { mode: Gpio.OUTPUT }),
+    new Gpio(13, { mode: Gpio.OUTPUT }),
+    new Gpio(19, { mode: Gpio.OUTPUT }),
+    new Gpio(26, { mode: Gpio.OUTPUT })
   ]
 
   motors = {
