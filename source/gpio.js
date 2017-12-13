@@ -5,7 +5,7 @@ const DUTY_MIN = 0
 const DUTY_MAX = 255
 const logger = Logger()
 const scanAmount = 10
-const obstacleWaitTime = 500
+const obstacleWaitTime = 2000
 const scanPeriodTime = 1000 / scanAmount
 const µsPerCm = 1e6 / 34321
 const minimumDistances = [15, 30, 30, 30, 30, 15]
@@ -116,10 +116,8 @@ logInterval = setInterval(() => {
 process.on('message', message => {
   if (message && message.body) {
     const { body } = message
-    const unobstructed =
-      !state.obstacle || Date.now() > state.obstacle + obstacleWaitTime
 
-    if (message.cmd === 'pwmWrite' && unobstructed) {
+    if (message.cmd === 'pwmWrite') {
       for (let motor of Object.keys(body)) {
         if (body[motor]) {
           for (let gpio of Object.keys(body[motor])) {
