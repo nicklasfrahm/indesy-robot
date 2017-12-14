@@ -146,13 +146,13 @@ controlInterval = setInterval(() => {
   if (unobstructed) {
     motors.left[0].pwmWrite(DUTY_MIN)
     motors.left[1].pwmWrite(DUTY_MAX)
-    motors.left[0].pwmWrite(DUTY_MIN)
-    motors.left[1].pwmWrite(DUTY_MAX)
+    motors.right[0].pwmWrite(DUTY_MIN)
+    motors.right[1].pwmWrite(DUTY_MAX)
   } else {
     motors.left[0].pwmWrite(DUTY_MIN)
     motors.left[1].pwmWrite(DUTY_MAX)
-    motors.left[0].pwmWrite(DUTY_MAX)
-    motors.left[1].pwmWrite(DUTY_MIN)
+    motors.right[0].pwmWrite(DUTY_MAX)
+    motors.right[1].pwmWrite(DUTY_MIN)
   }
 }, controlPeriodTime)
 
