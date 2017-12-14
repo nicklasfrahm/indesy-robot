@@ -103,9 +103,6 @@ if (os === 'linux') {
       if (!state.obstacle) {
         state.obstacle = Date.now()
       }
-      if (Date.now() <= state.obstacle + obstacleWaitTime) {
-        setDuty(DUTY_MAX)
-      }
     } else {
       state.obstacle = 0
     }
