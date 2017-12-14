@@ -5,8 +5,10 @@ const readline = require('readline')
 const sensor = require('./LSM6DS3')
 
 const deviceAddress = 0x6a
-let readWord = null
 let bus = null
+let logInterval = null
+let word = 0
+let byte = 0
 
 function continousLog(message) {
   readline.clearLine(process.stdout)
@@ -15,11 +17,22 @@ function continousLog(message) {
 }
 
 function initializeSensor(cb) {
-  readWordLogLoop = (register, message) => {
-    bus.readWord(deviceAddress, register, (err, word) => {
+  readWordLogLoop = register => {
+    bus.readWord(deviceAddress, register, (err, data) => {
       if (err) throw err
-      continousLog(`${message}${word}`)
-      readWordLogLoop(register, message)
+      word = data
+      readWordLogLoop(register)
+    })
+  }
+
+  readBytesLogLoop = register => {
+    bus.readByte(deviceAddress, register, (err, low) => {
+      if (err) throw err
+      bus.readByte(deviceAddress, register + 1, (err, high) => {
+        if (err) throw err
+        byte = (high << 8) | (low << 0)
+        readBytesLogLoop(register)
+      })
     })
   }
 
@@ -43,7 +56,11 @@ bus = i2c.open(1, function(err) {
   initializeSensor(err => {
     if (err) throw err
 
-    // read temperature as test
-    readWordLogLoop(sensor.OUTX_L_XL, 'X: ')
+    readWordLogLoop(sensor.OUTX_L_XL)
+    readBytesLogLoop(sensor.OUTX_L_XL)
+
+    logInterval = setInterval(() => {
+      continousLog(`W: ${word} | B: ${byte}`)
+    }, 200)
   })
 })

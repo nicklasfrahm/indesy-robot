@@ -1,3 +1,4 @@
+// registers
 exports.FUNC_CFG_ACCESS = 0x01
 exports.SENSOR_SYNC_TIME_FRAME = 0x04
 exports.FIFO_CTRL1 = 0x06
