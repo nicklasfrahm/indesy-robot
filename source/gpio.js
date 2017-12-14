@@ -137,10 +137,7 @@ process.on('message', message => {
 })
 
 controlInterval = setInterval(() => {
-  unobstructed =
-    !state.obstacle || Date.now() > state.obstacle + obstacleWaitTime
-
-  if (unobstructed) {
+  if (!state.obstacle) {
     motors.left[0].pwmWrite(DUTY_MIN)
     motors.left[1].pwmWrite(DUTY_MAX)
     motors.right[0].pwmWrite(DUTY_MIN)
