@@ -4,6 +4,7 @@ const os = require('os').platform()
 const readline = require('readline')
 const sensor = require('./LSM6DS3')
 
+const G = 9.81
 const deviceAddress = 0x6a
 let bus = null
 let logInterval = null
@@ -16,7 +17,12 @@ function continousLog(message) {
 }
 
 function pad(string, width) {
-  return width <= string.length ? `${string}` : pad(width, ` ${string}`)
+  string = string.toString()
+  return width <= string.length ? string : pad(width, ` ${string}`)
+}
+
+function toMetersPerSecond(raw) {
+  return raw / (1 << 15) * 2 * G
 }
 
 function initializeSensor(cb) {
@@ -53,9 +59,9 @@ bus = i2c.open(1, function(err) {
     readWordLoop(sensor.OUTZ_L_XL, 'accelerationZ')
 
     logInterval = setInterval(() => {
-      const accelerationX = pad(output.accelerationX, 6)
-      const accelerationY = pad(output.accelerationY, 6)
-      const accelerationZ = pad(output.accelerationZ, 6)
+      const accelerationX = pad(toMetersPerSecond(output.accelerationX), 6)
+      const accelerationY = pad(toMetersPerSecond(output.accelerationY), 6)
+      const accelerationZ = pad(toMetersPerSecond(output.accelerationZ), 6)
       continousLog(`${accelerationX} | ${accelerationY} | ${accelerationZ}`)
     }, 50)
   })
