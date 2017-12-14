@@ -19,7 +19,7 @@ function initializeSensor(cb) {
   readWordLoop = (register, name) => {
     bus.readWord(deviceAddress, register, (err, word) => {
       if (err) throw err
-      output[name] = word > 1 << 15 ? word - (2 << 16) : word
+      output[name] = word > 1 << 15 ? word - (2 << 15) : word
       readWordLoop(register, name)
     })
   }
