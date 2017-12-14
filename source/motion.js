@@ -60,7 +60,7 @@ bus = i2c.open(1, function(err) {
     readBytesLogLoop(sensor.OUTX_L_XL)
 
     logInterval = setInterval(() => {
-      continousLog(`W: ${word} | B: ${byte}`)
+      continousLog(`W: ${word} | ${32768 - word} | ${~word}`)
     }, 200)
   })
 })
