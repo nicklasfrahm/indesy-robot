@@ -26,7 +26,7 @@ function initializeSensor(cb) {
 
   bus.writeByte(deviceAddress, sensor.CTRL9_XL, 0x38, err => {
     if (err) return cb(err)
-    bus.writeByte(deviceAddress, sensor.CTRL1_XL, 0x60, err => {
+    bus.writeByte(deviceAddress, sensor.CTRL1_XL, 0x63, err => {
       if (err) return cb(err)
       bus.writeByte(deviceAddress, sensor.CTRL10_C, 0x38, err => {
         if (err) return cb(err)
