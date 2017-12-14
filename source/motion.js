@@ -57,6 +57,6 @@ bus = i2c.open(1, function(err) {
       const accelerationY = pad(output.accelerationY, 6)
       const accelerationZ = pad(output.accelerationZ, 6)
       continousLog(`${accelerationX} | ${accelerationY} | ${accelerationZ}`)
-    }, 20)
+    }, 50)
   })
 })
