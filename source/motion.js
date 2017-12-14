@@ -3,12 +3,26 @@ const winston = require('winston').cli()
 const os = require('os').platform()
 const readline = require('readline')
 const sensor = require('./LSM6DS3')
+const {
+  roundTo,
+  toMetersPerSecondSquared,
+  toRadiansPerSecond
+} = require('./util')
 
-const G = 9.81
 const deviceAddress = 0x6a
-let bus = null
 let logInterval = null
-let output = {}
+let bus = null
+let output = {
+  accX: 0,
+  accY: 0,
+  accZ: 0,
+  gyroX: 0,
+  gyroY: 0,
+  gyroZ: 0
+}
+let position = { x: 0, y: 0, z: 0 }
+let velocity = { x: 0, y: 0, z: 0 }
+let orientation = { x: 0, y: 0, z: 0 }
 
 function continousLog(message) {
   readline.clearLine(process.stdout)
@@ -16,21 +30,13 @@ function continousLog(message) {
   process.stdout.write(message)
 }
 
-function pad(string, width) {
-  string = string.toString()
-  return width <= string.length ? string : pad(width, ` ${string}`)
-}
-
-function toMetersPerSecond(raw) {
-  return raw / (1 << 15) * 2 * G
-}
-
 function initializeSensor(cb) {
-  readWordLoop = (register, name) => {
+  readWordLoop = (register, property, converter) => {
     bus.readWord(deviceAddress, register, (err, word) => {
       if (err) throw err
-      output[name] = word > 1 << 15 ? word - (2 << 15) : word
-      readWordLoop(register, name)
+      const signed = word > 1 << 15 ? word - (2 << 15) : word
+      output[property] = converter ? converter(signed) : signed
+      readWordLoop(register, property, converter)
     })
   }
 
@@ -54,24 +60,28 @@ bus = i2c.open(1, function(err) {
   initializeSensor(err => {
     if (err) throw err
 
-    readWordLoop(sensor.OUTX_L_XL, 'accelerationX')
-    readWordLoop(sensor.OUTY_L_XL, 'accelerationY')
-    readWordLoop(sensor.OUTZ_L_XL, 'accelerationZ')
+    readWordLoop(sensor.OUTX_L_XL, 'accX', toMetersPerSecondSquared)
+    readWordLoop(sensor.OUTY_L_XL, 'accY', toMetersPerSecondSquared)
+    readWordLoop(sensor.OUTZ_L_XL, 'accZ', toMetersPerSecondSquared)
+    readWordLoop(sensor.OUTX_L_G, 'gyroX', toRadiansPerSecond)
+    readWordLoop(sensor.OUTY_L_G, 'gyroY', toRadiansPerSecond)
+    readWordLoop(sensor.OUTZ_L_G, 'gyroZ', toRadiansPerSecond)
 
-    logInterval = setInterval(() => {
-      const accelerationX = pad(
-        toMetersPerSecond(output.accelerationX).toFixed(2),
-        6
-      )
-      const accelerationY = pad(
-        toMetersPerSecond(output.accelerationY).toFixed(2),
-        6
-      )
-      const accelerationZ = pad(
-        toMetersPerSecond(output.accelerationZ).toFixed(2),
-        6
-      )
-      continousLog(`${accelerationX} | ${accelerationY} | ${accelerationZ}`)
-    }, 50)
+    trackingInterval = setInterval(() => {
+      let totalAcceleration = 0
+
+      totalAcceleration += Math.pow(output.accX, 2)
+      totalAcceleration += Math.pow(output.accY, 2)
+      totalAcceleration += Math.pow(output.accZ, 2)
+
+      totalAcceleration = Math.sqrt(totalAcceleration)
+
+      const result = {
+        x: roundTo(Math.acos(output.accY / totalAcceleration), 2),
+        y: roundTo(Math.asin(output.accX / totalAcceleration), 2),
+        z: roundTo(Math.asin(output.accY / totalAcceleration), 2)
+      }
+      continousLog(`${res.x} | ${res.y} | ${res.z}`)
+    }, 500)
   })
 })

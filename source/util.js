@@ -1,6 +1,14 @@
 const winston = require('winston').cli()
 
-exports.roundTo = function(n, digits) {
+const G = 9.81
+
+exports.Logger = function() {
+  const worker = process.env.workerName
+  this.info = message => winston.info(`[${worker}] ${message}`)
+  return this
+}
+
+exports.roundTo = (n, digits) => {
   if (digits === undefined) {
     digits = 0
   }
@@ -18,8 +26,6 @@ exports.roundTo = function(n, digits) {
   return n
 }
 
-exports.Logger = function() {
-  const worker = process.env.workerName
-  this.info = message => winston.info(`[${worker}] ${message}`)
-  return this
-}
+exports.toMetersPerSecondSquared = raw => raw / (1 << 15) * 2 * G
+
+exports.toRadiansPerSecond = raw => raw / 245 / 360 * 2 * Math.PI
