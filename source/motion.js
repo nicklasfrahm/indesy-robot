@@ -15,6 +15,10 @@ function continousLog(message) {
   process.stdout.write(message)
 }
 
+function pad(string, width) {
+  return width <= string.length ? `${string}` : pad(width, ` ${string}`)
+}
+
 function initializeSensor(cb) {
   readWordLoop = (register, name) => {
     bus.readWord(deviceAddress, register, (err, word) => {
@@ -49,8 +53,10 @@ bus = i2c.open(1, function(err) {
     readWordLoop(sensor.OUTZ_L_XL, 'accelerationZ')
 
     logInterval = setInterval(() => {
-      const { accelerationX, accelerationY, accelerationZ } = output
+      const accelerationX = pad(output.accelerationX, 6)
+      const accelerationY = pad(output.accelerationY, 6)
+      const accelerationZ = pad(output.accelerationZ, 6)
       continousLog(`${accelerationX} | ${accelerationY} | ${accelerationZ}`)
-    }, 500)
+    }, 20)
   })
 })
