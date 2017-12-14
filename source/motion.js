@@ -48,9 +48,9 @@ bus = i2c.open(1, function(err) {
   initializeSensor(err => {
     if (err) throw err
 
-    readWordLogLoop(sensor.OUTX_L_XL, acceleration.x)
-    readWordLogLoop(sensor.OUTY_L_XL, acceleration.y)
-    readWordLogLoop(sensor.OUTZ_L_XL, acceleration.z)
+    readWordLoop(sensor.OUTX_L_XL, acceleration.x)
+    readWordLoop(sensor.OUTY_L_XL, acceleration.y)
+    readWordLoop(sensor.OUTZ_L_XL, acceleration.z)
 
     logInterval = setInterval(() => {
       continousLog(`${acceleration.x} | ${acceleration.y} | ${acceleration.z}`)
