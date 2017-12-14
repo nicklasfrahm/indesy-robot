@@ -4,9 +4,11 @@ const { roundTo, Logger } = require('./util')
 const DUTY_MIN = 0
 const DUTY_MAX = 255
 const logger = Logger()
-const scanAmount = 50
+const scanAmount = 100
+const controlAmount = 50
 const obstacleWaitTime = 1500
 const scanPeriodTime = 1000 / scanAmount
+const controlPeriodTime = 1000 / controlAmount
 const µsPerCm = 1e6 / 34321
 const minimumDistances = [15, 30, 30, 30, 30, 15]
 
@@ -17,7 +19,9 @@ let echo = null
 let triggers = null
 let cursor = 0
 let start = 0
+let unobstructed = true
 let scanInterval = null
+let controlInterval = null
 let logInterval = null
 let state = {
   obstacle: 0,
@@ -118,8 +122,6 @@ logInterval = setInterval(() => {
 process.on('message', message => {
   if (message && message.body) {
     const { body } = message
-    const unobstructed =
-      !state.obstacle || Date.now() > state.obstacle + obstacleWaitTime
 
     if (message.cmd === 'pwmWrite' && unobstructed) {
       for (let motor of Object.keys(body)) {
@@ -136,6 +138,23 @@ process.on('message', message => {
     }
   }
 })
+
+controlInterval = setInterval(() => {
+  unobstructed =
+    !state.obstacle || Date.now() > state.obstacle + obstacleWaitTime
+
+  if (unobstructed) {
+    motors.left[0].pwmWrite(DUTY_MIN)
+    motors.left[1].pwmWrite(DUTY_MAX)
+    motors.left[0].pwmWrite(DUTY_MIN)
+    motors.left[1].pwmWrite(DUTY_MAX)
+  } else {
+    motors.left[0].pwmWrite(DUTY_MIN)
+    motors.left[1].pwmWrite(DUTY_MAX)
+    motors.left[0].pwmWrite(DUTY_MAX)
+    motors.left[1].pwmWrite(DUTY_MIN)
+  }
+}, controlPeriodTime)
 
 // turn off pwm on shutdown
 if (os === 'win32') {
