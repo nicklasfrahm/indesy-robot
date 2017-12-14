@@ -59,9 +59,18 @@ bus = i2c.open(1, function(err) {
     readWordLoop(sensor.OUTZ_L_XL, 'accelerationZ')
 
     logInterval = setInterval(() => {
-      const accelerationX = pad(toMetersPerSecond(output.accelerationX), 6)
-      const accelerationY = pad(toMetersPerSecond(output.accelerationY), 6)
-      const accelerationZ = pad(toMetersPerSecond(output.accelerationZ), 6)
+      const accelerationX = pad(
+        toMetersPerSecond(output.accelerationX).toFixed(2),
+        6
+      )
+      const accelerationY = pad(
+        toMetersPerSecond(output.accelerationY).toFixed(2),
+        6
+      )
+      const accelerationZ = pad(
+        toMetersPerSecond(output.accelerationZ).toFixed(2),
+        6
+      )
       continousLog(`${accelerationX} | ${accelerationY} | ${accelerationZ}`)
     }, 50)
   })
