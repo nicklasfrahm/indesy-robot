@@ -5,12 +5,12 @@ const DUTY_MIN = 0
 const DUTY_MAX = 255
 const logger = Logger()
 const scanAmount = 100
-const controlAmount = 50
+const controlAmount = 100
 const obstacleWaitTime = 1500
 const scanPeriodTime = 1000 / scanAmount
 const controlPeriodTime = 1000 / controlAmount
 const µsPerCm = 1e6 / 34321
-const minimumDistances = [15, 30, 30, 30, 30, 15]
+const minimumDistances = [25, 50, 40, 40, 50, 25]
 
 let Gpio = null
 let motors = null
