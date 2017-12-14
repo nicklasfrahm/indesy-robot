@@ -24,7 +24,7 @@ function initializeSensor(cb) {
     bus.readWord(deviceAddress, register, (err, word) => {
       if (err) throw err
       variable = word > 1 << 15 ? word - (2 << 16) : word
-      readWordLoop(register)
+      readWordLoop(register, variable)
     })
   }
 
