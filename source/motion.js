@@ -76,7 +76,7 @@ bus = i2c.open(1, function(err) {
 
       totalAcceleration = Math.sqrt(totalAcceleration)
 
-      const result = {
+      const res = {
         x: roundTo(Math.acos(output.accY / totalAcceleration), 2),
         y: roundTo(Math.asin(output.accX / totalAcceleration), 2),
         z: roundTo(Math.asin(output.accY / totalAcceleration), 2)
