@@ -29,8 +29,8 @@ socket.on('controlMovement', data => {
     duty = Math.abs(Math.floor(data.duty * DUTY_MAX / 100))
 
     if (~data.buttons.indexOf('L')) {
-      body.right[forward ? 0 : 1] = 0
-      body.right[forward ? 1 : 0] = duty
+      body.right[forward ? 1 : 0] = 0
+      body.right[forward ? 0 : 1] = duty
     } else {
       body.right[0] = DUTY_MIN
       body.right[1] = DUTY_MIN
