@@ -4,8 +4,8 @@ const { roundTo, Logger } = require('./util')
 const DUTY_MIN = 0
 const DUTY_MAX = 255
 const logger = Logger()
-const scanAmount = 60
-const controlAmount = 60
+const scanAmount = 100
+const controlAmount = 100
 const obstacleWaitTime = 1500
 const scanPeriodTime = 1000 / scanAmount
 const controlPeriodTime = 1000 / controlAmount
@@ -19,12 +19,12 @@ let echo = null
 let triggers = null
 let cursor = 0
 let start = 0
-let unobstructed = true
 let scanInterval = null
 let controlInterval = null
 let logInterval = null
 let state = {
-  obstacle: 0,
+  obstacleRight: 0,
+  obstacleLeft: 0,
   wifi: true
 }
 
@@ -36,8 +36,8 @@ function setDuty(duty) {
   }
 }
 
-function checkProximity() {
-  for (let index = 0; index < distances.length; ++index) {
+function checkProximity(start) {
+  for (let index = start; index < start + distances.length / 2; ++index) {
     if (distances[index] < minimumDistances[index]) {
       return false
     }
@@ -99,12 +99,19 @@ if (os === 'linux') {
     // set trigger high for 10 microseconds
     triggers[cursor].trigger(10, 1)
 
-    if (!checkProximity()) {
-      if (!state.obstacle) {
-        state.obstacle = Date.now()
+    if (!checkProximity(0)) {
+      if (!state.obstacleRight) {
+        state.obstacleRight = Date.now()
       }
     } else {
-      state.obstacle = 0
+      state.obstacleRight = 0
+    }
+    if (!checkProximity(3)) {
+      if (!state.obstacleLeft) {
+        state.obstacleLeft = Date.now()
+      }
+    } else {
+      state.obstacleLeft = 0
     }
   }, scanPeriodTime)
 }
@@ -120,7 +127,7 @@ process.on('message', message => {
   if (message && message.body) {
     const { body } = message
 
-    if (message.cmd === 'pwmWrite' && unobstructed) {
+    if (message.cmd === 'pwmWrite') {
       for (let motor of Object.keys(body)) {
         if (body[motor]) {
           for (let gpio of Object.keys(body[motor])) {
@@ -137,16 +144,26 @@ process.on('message', message => {
 })
 
 controlInterval = setInterval(() => {
-  if (!state.obstacle) {
+  if (!state.obstacleRight && !state.obstacleLeft) {
+    // drive straight
     motors.left[0].pwmWrite(DUTY_MIN)
     motors.left[1].pwmWrite(DUTY_MAX)
     motors.right[0].pwmWrite(DUTY_MIN)
     motors.right[1].pwmWrite(DUTY_MAX)
   } else {
-    motors.left[0].pwmWrite(DUTY_MIN)
-    motors.left[1].pwmWrite(DUTY_MAX / 3 * 2)
-    motors.right[0].pwmWrite(DUTY_MAX / 3 * 2)
-    motors.right[1].pwmWrite(DUTY_MIN)
+    if (state.obstacleRight) {
+      // turn right
+      motors.left[0].pwmWrite(DUTY_MIN)
+      motors.left[1].pwmWrite(DUTY_MAX / 2)
+      motors.right[0].pwmWrite(DUTY_MAX / 2)
+      motors.right[1].pwmWrite(DUTY_MIN)
+    } else {
+      // turn left
+      motors.left[0].pwmWrite(DUTY_MAX / 2)
+      motors.left[1].pwmWrite(DUTY_MIN)
+      motors.right[0].pwmWrite(DUTY_MIN)
+      motors.right[1].pwmWrite(DUTY_MAX / 2)
+    }
   }
 }, controlPeriodTime)
 
