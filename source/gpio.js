@@ -154,15 +154,15 @@ controlInterval = setInterval(() => {
     if (state.obstacleRight) {
       // turn right
       motors.left[0].pwmWrite(DUTY_MIN)
-      motors.left[1].pwmWrite(DUTY_MAX / 2)
-      motors.right[0].pwmWrite(DUTY_MAX / 2)
+      motors.left[1].pwmWrite(DUTY_MAX / 3 * 2)
+      motors.right[0].pwmWrite(DUTY_MAX / 3 * 2)
       motors.right[1].pwmWrite(DUTY_MIN)
     } else {
       // turn left
-      motors.left[0].pwmWrite(DUTY_MAX / 2)
+      motors.left[0].pwmWrite(DUTY_MAX / 3 * 2)
       motors.left[1].pwmWrite(DUTY_MIN)
       motors.right[0].pwmWrite(DUTY_MIN)
-      motors.right[1].pwmWrite(DUTY_MAX / 2)
+      motors.right[1].pwmWrite(DUTY_MAX / 3 * 2)
     }
   }
 }, controlPeriodTime)
